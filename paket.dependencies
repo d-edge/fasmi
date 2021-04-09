@@ -5,4 +5,5 @@ framework: net5.0
 nuget Argu
 nuget FSharp.Compiler.Service
 nuget Iced
+nuget ICSharpCode.Decompiler
 nuget Microsoft.Diagnostics.Runtime

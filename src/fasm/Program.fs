@@ -11,6 +11,7 @@ type Cmd =
     | [<AltCommandLine("-o")>] Output of string
     | [<AltCommandLine("-w")>] Watch
     | [<AltCommandLine("-p")>] Platform of Disassembly.Platform
+    | [<AltCommandLine("-l")>] Language of Disassembly.Language
     
 
     interface Argu.IArgParserTemplate with
@@ -21,6 +22,7 @@ type Cmd =
             | Output _ -> "The output file" 
             | Watch -> "Watch mode"
             | Platform _ -> "The platform for disassembly"
+            | Language _ -> "The output language asm/il"
 
 
 [<EntryPoint>]
@@ -47,6 +49,11 @@ let main argv =
             else
                 X86
 
+    let language =
+        match cmd.TryGetResult Language with
+        | Some l -> l
+        | _ -> Asm
+
     let run() =
         printfn $"Source: %s{src}"
         printfn "Compilation"
@@ -55,14 +62,20 @@ let main argv =
         let out =
             match cmd.TryGetResult Output with
             | Some out -> out
-            | None -> dir src </> filename src + ".asm"
+            | None ->
+                let ext = 
+                    match language with      
+                    | Asm -> ".asm"
+                    | IL -> ".il"
+                dir src </> filename src + ext
 
         printfn "Disassembly"
+        
 
         if cmd.Contains Console then
-            Disassembly.decompileToConsole asmPath platform
+            Disassembly.decompileToConsole asmPath language platform
         else
-            Disassembly.decompileToFile asmPath out platform
+            Disassembly.decompileToFile asmPath out language platform
 
     if cmd.Contains Watch then
         run()

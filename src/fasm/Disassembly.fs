@@ -7,10 +7,15 @@ open Microsoft.Diagnostics.Runtime
 open System.Reflection
 open System.Runtime.Loader
 open System.IO
+open ICSharpCode.Decompiler
 
 type Platform =
     | X86
     | X64
+
+type Language =
+    | Asm
+    | IL
 
 module Platform =
     let bitness = function
@@ -42,7 +47,7 @@ let titleCase (s:String) =
     else
         s
 
-let decompile asmPath (writer: TextWriter) platform =
+let disassemble asmPath (writer: TextWriter) platform =
     use dt = DataTarget.AttachToProcess(Process.GetCurrentProcess().Id, false)
     use runtime = dt.ClrVersions.[0].CreateRuntime()
     use ctx = new CustomAssemblyLoadContext(fun _ -> true)
@@ -120,12 +125,23 @@ let decompile asmPath (writer: TextWriter) platform =
                 if not mth.IsGenericMethodDefinition && not mth.DeclaringType.IsGenericTypeDefinition then
                     decompileMethod mth
 
-let decompileToFile asmPath outPath platform =
+let ildasm asmPath writer =
+    use pe = new Metadata.PEFile(asmPath)
+    use cts = new Threading.CancellationTokenSource()
+    let disass = Disassembler.ReflectionDisassembler(PlainTextOutput(writer) :> ITextOutput,cts.Token)
+    disass.WriteModuleContents(pe)
+
+let decompile asmPath w language platform =
+    match language with
+    | Asm -> disassemble asmPath w platform
+    | IL -> ildasm asmPath w
+
+let decompileToFile asmPath outPath language platform =
     use w = File.CreateText(outPath)
-    decompile asmPath w platform
+    decompile asmPath w language platform
 
 
-let decompileToConsole asmPath platform  =
+let decompileToConsole asmPath language platform  =
     use s = Console.OpenStandardOutput()
     use w = new IO.StreamWriter(s)
-    decompile asmPath w platform
+    decompile asmPath w language platform
