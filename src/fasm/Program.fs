@@ -24,21 +24,44 @@ type Cmd =
             | Platform _ -> "The platform for disassembly"
             | Language _ -> "The output language asm/il"
 
+type Source =
+    | Script of string
+    | Assembly of string
+
+let shouldCompile = function
+    | Script _ -> true
+    | Assembly _ -> false
 
 [<EntryPoint>]
 let main argv =
     let cmd =ArgumentParser<Cmd>().ParseCommandLine(argv) 
-    let src = cmd.GetResult(Source)
-    let binDir = 
-        let d = dir src </> "bin"
-        if IO.Path.IsPathRooted d then
-            d
-        else
-            Environment.CurrentDirectory </> d
 
-    if not (existdir binDir) then
+    let source = 
+        let path = cmd.GetResult(Source)
+        let src =
+            if IO.Path.IsPathRooted path then
+                path
+            else
+                Environment.CurrentDirectory </> path
+
+        if IO.Path.GetExtension(src) =  ".dll" then
+            Assembly src
+        else
+            Script src
+
+
+    let binDir =
+        match source with
+        | Script src
+        | Assembly src -> dir src </> "bin"
+
+    if shouldCompile source && not (existdir binDir) then
         mkdir binDir
-    let asmPath = binDir </> filename src + ".dll"
+
+    let asmPath =
+        match source with
+        | Script src -> binDir </> filename src + ".dll"
+        | Assembly src -> src
 
     let platform = 
         match cmd.TryGetResult Platform with
@@ -55,9 +78,13 @@ let main argv =
         | _ -> Asm
 
     let run() =
-        printfn $"Source: %s{src}"
-        printfn "Compilation"
-        Compilation.compile src asmPath
+        match source with
+        | Script src ->
+            printfn $"Source: %s{src}"
+            printfn "Compilation"
+            Compilation.compile src asmPath
+        | Assembly src ->
+            printfn $"Source: %s{src}"
 
         let out =
             match cmd.TryGetResult Output with
@@ -67,7 +94,12 @@ let main argv =
                     match language with      
                     | Asm -> ".asm"
                     | IL -> ".il"
-                dir src </> filename src + ext
+                match source with
+                | Script src 
+                | Assembly src -> dir src </> filename src + ext
+
+
+                
 
         printfn "Disassembly"
         
@@ -79,7 +111,12 @@ let main argv =
 
     if cmd.Contains Watch then
         run()
-        use watcher = new IO.FileSystemWatcher(dir src, "*.fsx", EnableRaisingEvents = true)
+        let dir,ext =
+            match source with
+            | Script src
+            | Assembly src -> dir src, ext src
+        use watcher = new IO.FileSystemWatcher(dir, "*" + ext, EnableRaisingEvents = true)
+
         watcher.Changed |> Event.add (fun _ -> run())
 
         use signal = new System.Threading.ManualResetEvent(false)

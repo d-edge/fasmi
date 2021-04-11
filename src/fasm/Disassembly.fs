@@ -54,7 +54,6 @@ let disassemble asmPath (writer: TextWriter) platform =
 
     let asm = ctx.LoadFromAssemblyPath(asmPath)
 
-    let ty = asm.GetType(titleCase (asm.GetName().Name))
     
 
     let decompileMethod (mthinfo: MethodBase) =
@@ -112,18 +111,18 @@ let disassemble asmPath (writer: TextWriter) platform =
           yield! ty.GetMethods() |> Seq.cast<MethodBase>
 
         ]
+    for ty in asm.GetTypes() do
 
-
-    for mth in getAllMethods ty do
-        if mth.DeclaringType <> typeof<obj> then
-            if not mth.IsGenericMethodDefinition && not mth.DeclaringType.IsGenericTypeDefinition then
-                decompileMethod mth
-
-    for sty in ty.GetNestedTypes() do
-        for mth in getAllMethods sty do
+        for mth in getAllMethods ty do
             if mth.DeclaringType <> typeof<obj> then
                 if not mth.IsGenericMethodDefinition && not mth.DeclaringType.IsGenericTypeDefinition then
                     decompileMethod mth
+
+        for sty in ty.GetNestedTypes() do
+            for mth in getAllMethods sty do
+                if mth.DeclaringType <> typeof<obj> then
+                    if not mth.IsGenericMethodDefinition && not mth.DeclaringType.IsGenericTypeDefinition then
+                        decompileMethod mth
 
 let ildasm asmPath writer =
     use pe = new Metadata.PEFile(asmPath)
