@@ -32,99 +32,120 @@ let shouldCompile = function
     | Script _ -> true
     | Assembly _ -> false
 
+let help = """fasm                                F# -> ASM disassembler
+----------------------------------------------------------
+copyright D-EDGE 2021
+Inspired from https://sharplab.io/ code by Andrey Shchekin
+----------------------------------------------------------
+"""
+
 [<EntryPoint>]
 let main argv =
-    let cmd =ArgumentParser<Cmd>().ParseCommandLine(argv) 
-
-    let source = 
-        let path = cmd.GetResult(Source)
-        let src =
-            if IO.Path.IsPathRooted path then
-                path
-            else
-                Environment.CurrentDirectory </> path
-
-        if IO.Path.GetExtension(src) =  ".dll" then
-            Assembly src
-        else
-            Script src
-
-
-    let binDir =
-        match source with
-        | Script src
-        | Assembly src -> dir src </> "bin"
-
-    if shouldCompile source && not (existdir binDir) then
-        mkdir binDir
-
-    let asmPath =
-        match source with
-        | Script src -> binDir </> filename src + ".dll"
-        | Assembly src -> src
-
-    let platform = 
-        match cmd.TryGetResult Platform with
-        | Some p -> p
-        | None ->
-            if Environment.Is64BitProcess then
-                X64
-            else
-                X86
-
-    let language =
-        match cmd.TryGetResult Language with
-        | Some l -> l
-        | _ -> Asm
-
-    let run() =
-        match source with
-        | Script src ->
-            printfn $"Source: %s{src}"
-            printfn "Compilation"
-            Compilation.compile src asmPath
-        | Assembly src ->
-            printfn $"Source: %s{src}"
-
-        let out =
-            match cmd.TryGetResult Output with
-            | Some out -> out
-            | None ->
-                let ext = 
-                    match language with      
-                    | Asm -> ".asm"
-                    | IL -> ".il"
-                match source with
-                | Script src 
-                | Assembly src -> dir src </> filename src + ext
-
-
-                
-
-        printfn "Disassembly"
+    
+    let parser =ArgumentParser<Cmd>(programName = "dotnet fasm")
+    try
+        let cmd = parser.ParseCommandLine(argv)
         
 
-        if cmd.Contains Console then
-            Disassembly.decompileToConsole asmPath language platform
-        else
-            Disassembly.decompileToFile asmPath out language platform
+        let source = 
+            let path = cmd.GetResult(Source)
+            let src =
+                if IO.Path.IsPathRooted path then
+                    path |> IO.Path.GetFullPath
+                else
+                    Environment.CurrentDirectory </> path |> IO.Path.GetFullPath
 
-    if cmd.Contains Watch then
-        run()
-        let dir,ext =
+            if IO.Path.GetExtension(src) =  ".dll" then
+                Assembly src
+            else
+                Script src
+
+
+        let binDir =
             match source with
             | Script src
-            | Assembly src -> dir src, ext src
-        use watcher = new IO.FileSystemWatcher(dir, "*" + ext, EnableRaisingEvents = true)
+            | Assembly src -> dir src </> "bin"
 
-        watcher.Changed |> Event.add (fun _ -> run())
+        if shouldCompile source && not (existdir binDir) then
+            mkdir binDir
 
-        use signal = new System.Threading.ManualResetEvent(false)
+        let asmPath =
+            match source with
+            | Script src -> binDir </> filename src + ".dll"
+            | Assembly src -> src
 
-        Console.CancelKeyPress |> Event.add (fun _ -> signal.Set() |> ignore)
+        let platform = 
+            match cmd.TryGetResult Platform with
+            | Some p -> p
+            | None ->
+                if Environment.Is64BitProcess then
+                    X64
+                else
+                    X86
 
-        signal.WaitOne() |> ignore
-    else
-        run()
+        let language =
+            match cmd.TryGetResult Language with
+            | Some l -> l
+            | _ -> Asm
 
-    0 // return an integer exit code
+        let logf fmt =  
+            if cmd.Contains Console then
+                Printf.kprintf (fun _ -> ()) fmt
+            else
+                Printf.kprintf (printfn "%s") fmt
+
+        logf $"%s{help}"
+        let run() =
+
+            match source with
+            | Script src ->
+                logf $"Source: %s{src}"
+                logf "Compilation" 
+                Compilation.compile src asmPath
+            | Assembly src ->
+                logf $"Source: %s{src}"
+
+            let out =
+                match cmd.TryGetResult Output with
+                | Some out -> out
+                | None ->
+                    let ext = 
+                        match language with      
+                        | Asm -> ".asm"
+                        | IL -> ".il"
+                    match source with
+                    | Script src 
+                    | Assembly src -> dir src </> filename src + ext
+
+
+            logf "Disassembly"
+            
+
+            if cmd.Contains Console then
+                Disassembly.decompileToConsole asmPath language platform
+            else
+                Disassembly.decompileToFile asmPath out language platform
+
+        if cmd.Contains Watch then
+            run()
+            let dir, filter =
+                match source with
+                | Script src
+                | Assembly src -> dir src, filenameExt src
+            use watcher = new IO.FileSystemWatcher(dir, filter, EnableRaisingEvents = true)
+
+            watcher.Changed |> Event.add (fun _ -> run())
+
+            use signal = new System.Threading.ManualResetEvent(false)
+
+            Console.CancelKeyPress |> Event.add (fun _ -> signal.Set() |> ignore)
+
+            signal.WaitOne() |> ignore
+        else
+            run()
+        0 // return an integer exit code
+    with
+    | :? Argu.ArguParseException ->
+        printfn $"%s{help}"
+        printfn $"%s{parser.PrintUsage()}"
+        1 // return integer exit code for error

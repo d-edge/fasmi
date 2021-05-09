@@ -32,6 +32,7 @@ let compile (path: string) (asmPath: string) =
                            "--debug:portable"
                            "--noframework"
                            "--targetprofile:netcore"
+                           "--langversion:preview"
                            "--define:NET"
                            "--define:NET5_0"
                            "--define:NETCOREAPP"
