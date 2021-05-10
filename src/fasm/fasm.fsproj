@@ -10,16 +10,19 @@
     <Description>F# jit disassembler</Description>
     <Version>0.1.0</Version>
     <Copyright>Copyright (c) 2021 D-EDGE</Copyright>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/d-edge/fasm</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageType>DotNetCliTool</PackageType>
+    <PackageIcon>fasm.png</PackageIcon>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="FileSystem.fs" />
     <Compile Include="Compilation.fs" />
     <Compile Include="Disassembly.fs" />
     <Compile Include="Program.fs" />
+    <None Include="..\..\img\fasm.png" Pack="true" PackagePath=""/>
+    <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

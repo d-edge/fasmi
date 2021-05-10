@@ -17,12 +17,12 @@ type Cmd =
     interface Argu.IArgParserTemplate with
         member this.Usage =
             match this with
-            | Source _ -> "the source fsx file"
-            | Console -> "Output to console"
-            | Output _ -> "The output file" 
-            | Watch -> "Watch mode"
-            | Platform _ -> "The platform for disassembly"
-            | Language _ -> "The output language asm/il"
+            | Source _ -> "the source fsx or dotnet assembly file"
+            | Console -> "output to console"
+            | Output _ -> "specifiy the output file" 
+            | Watch -> "run in watch mode"
+            | Platform _ -> "specify the platform for disassembly"
+            | Language _ -> "specify the output language (asm/il)"
 
 type Source =
     | Script of string
@@ -42,7 +42,16 @@ Inspired from https://sharplab.io/ code by Andrey Shchekin
 [<EntryPoint>]
 let main argv =
     
-    let parser =ArgumentParser<Cmd>(programName = "dotnet fasm")
+    let processName = 
+        let name = IO.Path.GetFileNameWithoutExtension (Diagnostics.Process.GetCurrentProcess().MainModule.FileName )
+        if String.Equals(name, "dotnet", StringComparison.OrdinalIgnoreCase) then
+            "dotnet fasm"
+        else
+            "fasm"
+
+
+
+    let parser =ArgumentParser<Cmd>( programName = processName)
     try
         let cmd = parser.ParseCommandLine(argv)
         
