@@ -20,8 +20,10 @@ let ensureNet5Attr asmPath =
 let compile (path: string) (asmPath: string) = 
     let checker = FSharpChecker.Create(keepAssemblyContents = true)
 
-    let net50Path = @"C:\Program Files\dotnet\packs\Microsoft.NETCore.App.Ref\5.0.0\ref\net5.0\"
-
+    let net50Path = 
+        let  runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
+        IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0/")
+        
     let attrfile = ensureNet5Attr asmPath
     
     let diag,_ = 
