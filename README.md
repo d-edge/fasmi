@@ -98,6 +98,9 @@ Specify the target language with the `-l` flag:
 * asm : disassemble the jit output as a x86/x86 .asm file
 * il : disassemble the output as a MSIL .il file
 
+# Acknowledgment
+
+This tool is based on [Andrey Shchekin](https://github.com/ashmind) code for [https://sharplab.io/](https://sharplab.io/).
 
 # Contributing
 

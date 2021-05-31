@@ -1,6 +1,6 @@
 module Disassembly
 (*
-This module is highly inspired by Andrey Shchekin code for https://sharplab.io/
+This module is partially a translation of Andrey Shchekin code for https://sharplab.io/
 The original code is under BSD-2 license and can be found on github:
 https://github.com/ashmind/SharpLab
 
