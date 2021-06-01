@@ -3,13 +3,16 @@ open System
 open FSharp.Compiler.SourceCodeServices
 open FileSystem
 
+// the Assembly attribute to build output as net5.0
 let net50Attr = """
 namespace Microsoft.BuildSettings
 [<System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")>]
 do ()
 """
+
 let net50AttrName = "Net50AssemblyAttr.fs"
 
+// check the net5.0 assembly attribute file exists or create it
 let ensureNet5Attr asmPath =
     let filePath = dir asmPath </> net50AttrName
     if not (IO.File.Exists filePath) then
@@ -17,9 +20,11 @@ let ensureNet5Attr asmPath =
     filePath
 
 
+/// compile given script as an assembly
 let compile (path: string) (asmPath: string) = 
     let checker = FSharpChecker.Create(keepAssemblyContents = true)
 
+    // fin net5.0 assembly path
     let net50Path = 
         let  runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
         IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0/")
@@ -52,5 +57,6 @@ let compile (path: string) (asmPath: string) =
                             |])
         |> Async.RunSynchronously
 
+    // output compilatoin errors
     for d in diag do
         printfn $"{d}"
