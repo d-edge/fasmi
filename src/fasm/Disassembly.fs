@@ -90,63 +90,68 @@ let disassemble asmPath (writer: TextWriter) platform =
 
         runtime.FlushCachedData()
         let h = mthinfo.MethodHandle
-        try
-            RuntimeHelpers.PrepareMethod(h)
-        with
-        | ex -> failwithf $"Failed to prepare: %s{mthinfo.DeclaringType.FullName}%s{ mthinfo.Name}"
+        let prepareSucceeded =
+            try
+                RuntimeHelpers.PrepareMethod(h)
+                true
+            with
+            | ex -> 
+                writer.WriteLine $";Failed to prepare: %s{mthinfo.DeclaringType.FullName}%s{ mthinfo.Name}"
+                false
 
 
-        // get a byte array from jitted memory region
-        let getBytes (regions: HotColdRegions) =
-            let span = ReadOnlySpan<byte>((nativeint regions.HotStart).ToPointer(), int regions.HotSize)
-            span.ToArray()
+        if prepareSucceeded then
+            // get a byte array from jitted memory region
+            let getBytes (regions: HotColdRegions) =
+                let span = ReadOnlySpan<byte>((nativeint regions.HotStart).ToPointer(), int regions.HotSize)
+                span.ToArray()
 
-        // try to find method runtime info
-        let clrmth = runtime.GetMethodByHandle(uint64 (h.Value.ToInt64()))
+            // try to find method runtime info
+            let clrmth = runtime.GetMethodByHandle(uint64 (h.Value.ToInt64()))
 
 
-        if not (isNull clrmth) then
+            if not (isNull clrmth) then
 
-            if clrmth.HotColdInfo.HotSize > 0u && clrmth.HotColdInfo.HotStart <> UInt64.MaxValue then
-                // method has been jitted, emit it
-                writer.WriteLine $""
-                writer.WriteLine $"%s{clrmth.Signature}"
-                writer.Flush()
-
-                let bytes = getBytes clrmth.HotColdInfo
-                let address = clrmth.HotColdInfo.HotStart
-
-                let decoder = Decoder.Create(Platform.bitness platform,bytes)
-                decoder.IP <- address
-                let formatter =
-                        IntelFormatter(formatterOptions,
-                                        { new ISymbolResolver with 
-                                            member _.TryGetSymbol(inst, _,_,addr, _, result) =
-                                                if addr >= address && addr < address + uint64 clrmth.HotColdInfo.HotSize then
-                                                    // symbol is in method scope, emit label
-                                                    result <- SymbolResult(addr, $"L%04x{addr-address}")
-                                                    true
-                                                else
-                                                    // symbol is out of scope
-                                                    // try to find called method
-                                                    let callmth = runtime.GetMethodByInstructionPointer(addr)
-                                                    if isNull callmth then
-                                                        // there is no method, just emit address
-                                                        result <- SymbolResult()
-                                                        false
-                                                    else
-                                                        // a method was found, emit the method signature
-                                                        result <- SymbolResult(addr, callmth.Signature)
-                                                        true
-                                             })
-
-                let out = StringOutput()
-
-                // render instructions
-                for inst in decoder do
-                    formatter.Format(&inst, out)
-                    writer.WriteLine $"L%04x{inst.IP - address}: %s{out.ToStringAndReset()}"
+                if clrmth.HotColdInfo.HotSize > 0u && clrmth.HotColdInfo.HotStart <> UInt64.MaxValue then
+                    // method has been jitted, emit it
+                    writer.WriteLine $""
+                    writer.WriteLine $"%s{clrmth.Signature}"
                     writer.Flush()
+
+                    let bytes = getBytes clrmth.HotColdInfo
+                    let address = clrmth.HotColdInfo.HotStart
+
+                    let decoder = Decoder.Create(Platform.bitness platform,bytes)
+                    decoder.IP <- address
+                    let formatter =
+                            IntelFormatter(formatterOptions,
+                                            { new ISymbolResolver with 
+                                                member _.TryGetSymbol(inst, _,_,addr, _, result) =
+                                                    if addr >= address && addr < address + uint64 clrmth.HotColdInfo.HotSize then
+                                                        // symbol is in method scope, emit label
+                                                        result <- SymbolResult(addr, $"L%04x{addr-address}")
+                                                        true
+                                                    else
+                                                        // symbol is out of scope
+                                                        // try to find called method
+                                                        let callmth = runtime.GetMethodByInstructionPointer(addr)
+                                                        if isNull callmth then
+                                                            // there is no method, just emit address
+                                                            result <- SymbolResult()
+                                                            false
+                                                        else
+                                                            // a method was found, emit the method signature
+                                                            result <- SymbolResult(addr, callmth.Signature)
+                                                            true
+                                                 })
+
+                    let out = StringOutput()
+
+                    // render instructions
+                    for inst in decoder do
+                        formatter.Format(&inst, out)
+                        writer.WriteLine $"L%04x{inst.IP - address}: %s{out.ToStringAndReset()}"
+                        writer.Flush()
 
     let outputGenericMethod (mthinfo: MethodBase)  =
         
