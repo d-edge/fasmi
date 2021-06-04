@@ -1,0 +1,7 @@
+xunit
+FSharp.Core
+xunit.runner.visualstudio
+Microsoft.NET.Test.Sdk
+coverlet.collector
+Microsoft.Diagnostics.Runtime
+System.Runtime.InteropServices.RuntimeInformation

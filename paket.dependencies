@@ -3,7 +3,12 @@ source https://api.nuget.org/v3/index.json
 storage: none
 framework: net5.0
 nuget Argu
+nuget coverlet.collector
 nuget FSharp.Compiler.Service
 nuget Iced
 nuget ICSharpCode.Decompiler
 nuget Microsoft.Diagnostics.Runtime
+nuget Microsoft.NET.Test.Sdk
+nuget System.Runtime.InteropServices.RuntimeInformation
+nuget xunit
+nuget xunit.runner.visualstudio
