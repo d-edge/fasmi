@@ -7,6 +7,7 @@
     <ToolCommandName>fasm</ToolCommandName>
     <PackageOutputPath>./nuget</PackageOutputPath>
     <Authors>Jérémie Chassaing</Authors>
+    <Company>D-Edge</Company>
     <Description>F# jit disassembler</Description>
     <NugetVersion Condition=" '$(NugetVersion)' == ''">0.0.0</NugetVersion>
     <Version>$(NugetVersion)</Version>
@@ -15,6 +16,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageType>DotNetCliTool</PackageType>
     <PackageIcon>fasm.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/d-edge/fasm</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/d-edge/fasm</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
