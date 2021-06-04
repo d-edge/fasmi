@@ -8,7 +8,8 @@
     <PackageOutputPath>./nuget</PackageOutputPath>
     <Authors>Jérémie Chassaing</Authors>
     <Description>F# jit disassembler</Description>
-    <Version>0.1.0</Version>
+    <NugetVersion Condition=" '$(NugetVersion)' == ''">0.0.0</NugetVersion>
+    <Version>$(NugetVersion)</Version>
     <Copyright>Copyright (c) 2021 D-EDGE</Copyright>
     <RepositoryUrl>https://github.com/d-edge/fasm</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
@@ -21,8 +22,9 @@
     <Compile Include="Compilation.fs" />
     <Compile Include="Disassembly.fs" />
     <Compile Include="Program.fs" />
-    <None Include="..\..\img\fasm.png" Pack="true" PackagePath=""/>
-    <None Include="..\..\LICENSE" Pack="true" PackagePath=""/>
+    <None Include="..\..\img\fasm.png" Pack="true" PackagePath="" />
+    <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
+    <None Include="paket.references" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

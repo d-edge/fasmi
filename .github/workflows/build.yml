@@ -42,7 +42,7 @@ jobs:
         run: dotnet test -c Release
       - name: Pack
         if: matrix.os == 'ubuntu-latest'
-        run: dotnet pack -v normal -c Release --no-restore -p:PackageVersion=$GITHUB_RUN_ID src/$PROJECT_NAME/$PROJECT_NAME.*proj -o bin/nuget
+        run: dotnet pack -v normal -c Release --no-restore -p:NugetVersion=$GITHUB_RUN_ID.0.0 src/$PROJECT_NAME/$PROJECT_NAME.fsproj -o bin/nuget
       - name: Upload Artifact
         if: matrix.os == 'ubuntu-latest'
         uses: actions/upload-artifact@v2
@@ -81,7 +81,7 @@ jobs:
           echo Version: $VERSION
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
-          dotnet pack -v normal -c Release -p:PackageVersion=$VERSION -o nupkg src/$PROJECT_NAME/$PROJECT_NAME.*proj
+          dotnet pack -v normal -c Release -p:NugetVersion=$VERSION -o nupkg src/$PROJECT_NAME/$PROJECT_NAME.fsproj
       - name: Push to GitHub Feed
         run: |
           for f in ./nupkg/*.nupkg
