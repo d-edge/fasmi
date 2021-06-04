@@ -9,8 +9,6 @@
     <Authors>Jérémie Chassaing</Authors>
     <Company>D-Edge</Company>
     <Description>F# jit disassembler</Description>
-    <NugetVersion Condition=" '$(NugetVersion)' == ''">0.0.0</NugetVersion>
-    <Version>$(NugetVersion)</Version>
     <Copyright>Copyright (c) 2021 D-EDGE</Copyright>
     <RepositoryUrl>https://github.com/d-edge/fasm</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
