@@ -81,6 +81,7 @@ jobs:
           echo Version: $VERSION
           VERSION="${VERSION//v}"
           echo Clean Version: $VERSION
+          dotnet tool restore
           dotnet pack -v normal -c Release -p:PackageVersion=$VERSION -o nupkg src/$PROJECT_NAME/$PROJECT_NAME.fsproj
       - name: Push to GitHub Feed
         run: |
