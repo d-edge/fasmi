@@ -2,6 +2,8 @@
 
 A F# to Jitted ASM / IL disassembler as a dotnet tool
 
+![fasm demo](img/fasm-demo.gif)
+
 # Getting Started
 
 Install fasm as a global dotnet tool
