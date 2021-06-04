@@ -6,14 +6,14 @@ open FileSystem
 open Xunit
 
 // generated asm is platform sensitive due to differences in call conventions
-let isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux)
+let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
 
 // normalize line endings for string comparions
 let normalizeLineEnds (s: string) =
-    if isLinux then
-        s.Replace("\r\n", "\n") 
-    else
+    if isWindows then
         s
+    else
+        s.Replace("\r\n", "\n") 
 
 module Assert =
     let EqualString(x, y) = Assert.Equal(normalizeLineEnds x, normalizeLineEnds y)
@@ -42,20 +42,21 @@ let ``check basic 'inc' method disassembly`` () =
     let output = disassembleFromSourceProject "inc"
     
     let expected = 
-        if isLinux then
-            // on linux, the argument is in rdi
-            """
-;Source.inc(Int32)
-L0000: lea eax, [rdi+1]
-L0003: ret
-"""
-        else 
+        if isWindows then
             // on windows, the argument is in rcx
             """
 ;Source.inc(Int32)
 L0000: lea eax, [rcx+1]
 L0003: ret
 """
+        else
+            // on linux, the argument is in rdi
+            """
+;Source.inc(Int32)
+L0000: lea eax, [rdi+1]
+L0003: ret
+"""
+
     Assert.EqualString(expected, output)
 
 [<Fact>]
