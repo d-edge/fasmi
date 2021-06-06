@@ -87,7 +87,7 @@ Use the `-o` flag to specifie the target file path and name.
 
 ## Watch
 
-The `-w` flags runs fasm in watch mode. The file is recompiled and disassembled automatically when saved.
+The `-w` flag runs fasm in watch mode. The file is recompiled and disassembled automatically when saved.
 
 ## Platform
 
