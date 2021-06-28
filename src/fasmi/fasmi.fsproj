@@ -4,18 +4,18 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net5.0</TargetFramework>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>fasm</ToolCommandName>
+    <ToolCommandName>fasmi</ToolCommandName>
     <PackageOutputPath>./nuget</PackageOutputPath>
     <Authors>Jérémie Chassaing</Authors>
     <Company>D-Edge</Company>
     <Description>F# jit disassembler</Description>
     <Copyright>Copyright (c) 2021 D-EDGE</Copyright>
-    <RepositoryUrl>https://github.com/d-edge/fasm</RepositoryUrl>
+    <RepositoryUrl>https://github.com/d-edge/fasmi</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageType>DotNetCliTool</PackageType>
-    <PackageIcon>fasm.png</PackageIcon>
-    <PackageProjectUrl>https://github.com/d-edge/fasm</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/d-edge/fasm</RepositoryUrl>
+    <PackageIcon>fasmi.png</PackageIcon>
+    <PackageProjectUrl>https://github.com/d-edge/fasmi</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/d-edge/fasmi</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
   </PropertyGroup>
   <ItemGroup>
@@ -23,7 +23,7 @@
     <Compile Include="Compilation.fs" />
     <Compile Include="Disassembly.fs" />
     <Compile Include="Program.fs" />
-    <None Include="..\..\img\fasm.png" Pack="true" PackagePath="" />
+    <None Include="..\..\img\fasmi.png" Pack="true" PackagePath="" />
     <None Include="..\..\LICENSE" Pack="true" PackagePath="" />
     <None Include="paket.references" />
   </ItemGroup>

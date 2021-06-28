@@ -9,8 +9,8 @@
     <Compile Include="Tests.fs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\fasm\fasm.fsproj" />
-    <ProjectReference Include="..\fasm.tests.source\fasm.tests.source\fasm.tests.source.fsproj" />
+    <ProjectReference Include="..\..\src\fasmi\fasmi.fsproj" />
+    <ProjectReference Include="..\fasmi.tests.source\fasmi.tests.source.fsproj" />
   </ItemGroup>
   <Import Project="..\..\.paket\Paket.Restore.targets" />
 </Project>

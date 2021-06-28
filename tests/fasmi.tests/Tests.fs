@@ -19,12 +19,12 @@ module Assert =
     let EqualString(x, y) = Assert.Equal(normalizeLineEnds x, normalizeLineEnds y)
 
 
-// disassemble en single method from the fasm.tests.source project
+// disassemble en single method from the fasmi.tests.source project
 // notice that this project is *ALWAYS* compiled in release to produce
 // the same optimized IL.
 let disassembleFromSourceProject methodName =
     use ctx = new Disassembly.CustomAssemblyLoadContext(fun _ -> true)
-    let asm = ctx.LoadFromAssemblyPath(Environment.CurrentDirectory </> "fasm.tests.source.dll")
+    let asm = ctx.LoadFromAssemblyPath(Environment.CurrentDirectory </> "fasmi.tests.source.dll")
 
     let mth = asm.GetType("Source").GetMethod(methodName)
     if isNull mth then
