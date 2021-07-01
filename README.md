@@ -1,22 +1,22 @@
-# fasm
+# fasmi
 
 A F# to Jitted ASM / IL disassembler as a dotnet tool
 
-![fasm demo](img/fasm-demo.gif)
+![fasmi demo](img/fasmi-demo.gif)
 
 # Getting Started
 
-Install fasm as a global dotnet tool
+Install fasmi as a global dotnet tool
 
 ``` bash
-dotnet tool install fasm -g
+dotnet tool install fasmi -g
 ``` 
 
 or as a dotnet local tool
 
 ``` bash
 dotnet new tool-manifest
-dotnet tool install fasm
+dotnet tool install fasmi
 ```` 
 
 # Quickstart
@@ -27,9 +27,9 @@ Create a demo.fsx F# interactive script:
 let inc x = x+1
 ```
 
-run fasm:
+run fasmi:
 ``` bash
-dotnet fasm ./demo.fsx
+dotnet fasmi ./demo.fsx
 ```
 
 and open at the generated demo.asm file:
@@ -42,9 +42,9 @@ L0003: ret
 
 ## Watch mode
 
-run fasm in watch mode:
+run fasmi in watch mode:
 ``` bash
-dotnet fasm ./demo.fsx -w
+dotnet fasmi ./demo.fsx -w
 ```
 
 Open the demo.fsx and demo.asm files side by side in your favorite editor, make changes to demo.fsx and save. The demo.asm file is updated on the fly.
@@ -53,7 +53,7 @@ Open the demo.fsx and demo.asm files side by side in your favorite editor, make 
 # Usage
 
 ```
-USAGE: dotnet fasm [--help] [--console] [--output <string>] [--watch] [--platform <x86|x64>] [--language <asm|il>] <string>
+USAGE: dotnet fasmi [--help] [--console] [--output <string>] [--watch] [--platform <x86|x64>] [--language <asm|il>] <string>
 
 SOURCE:
 
@@ -75,7 +75,7 @@ OPTIONS:
 
 The input can be a fsx F# script file or any dotnet .dll assemlby file. F# scripts are compiled for net 5.0.
 
-Using a dotnet assembly as an input, you can use fasm on any dotnet language.
+Using a dotnet assembly as an input, you can use fasmi on any dotnet language.
 
 ## Console
 
@@ -87,7 +87,7 @@ Use the `-o` flag to specifie the target file path and name.
 
 ## Watch
 
-The `-w` flag runs fasm in watch mode. The file is recompiled and disassembled automatically when saved.
+The `-w` flag runs fasmi in watch mode. The file is recompiled and disassembled automatically when saved.
 
 ## Platform
 

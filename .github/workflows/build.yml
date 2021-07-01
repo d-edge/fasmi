@@ -11,7 +11,7 @@ env:
   # Disable sending usage data to Microsoft
   DOTNET_CLI_TELEMETRY_OPTOUT: true
   # Project name to pack and publish
-  PROJECT_NAME: fasm
+  PROJECT_NAME: fasmi
   # GitHub Packages Feed settings
   GITHUB_FEED: https://nuget.pkg.github.com/d-edge/
   GITHUB_USER: thinkbeforecoding

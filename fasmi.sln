@@ -5,13 +5,20 @@ VisualStudioVersion = 16.6.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{BE1E57A8-58BB-4372-8117-0495C049AF19}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fasm", "src\fasm\fasm.fsproj", "{BB23E9C3-8766-4F75-B4C8-2A3F033613E6}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fasmi", "src\fasmi\fasmi.fsproj", "{BB23E9C3-8766-4F75-B4C8-2A3F033613E6}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{478F44FE-81BE-41A8-B0D7-1FD9C7D785CD}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fasm.tests", "tests\fasm.tests\fasm.tests.fsproj", "{25B5CA7F-0025-41E1-BC58-CB8FA7888721}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fasmi.tests", "tests\fasmi.tests\fasmi.tests.fsproj", "{25B5CA7F-0025-41E1-BC58-CB8FA7888721}"
 EndProject
-Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fasm.tests.source", "tests\fasm.tests.source\fasm.tests.source\fasm.tests.source.fsproj", "{74A37C7F-AEDC-48DC-939B-4392BE7FA623}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "fasmi.tests.source", "tests\fasmi.tests.source\fasmi.tests.source.fsproj", "{74A37C7F-AEDC-48DC-939B-4392BE7FA623}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".build", ".build", "{FB7EF8B5-BDF3-4169-8634-C6E704AE513D}"
+	ProjectSection(SolutionItems) = preProject
+		paket.dependencies = paket.dependencies
+		README.md = README.md
+		RELEASE_NOTES.md = RELEASE_NOTES.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

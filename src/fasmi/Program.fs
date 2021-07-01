@@ -35,7 +35,7 @@ let shouldCompile = function
     | Assembly _ -> false
 
 
-let help = """fasm                                F# -> ASM disassembler
+let help = """fasmi                               F# -> ASM disassembler
 ----------------------------------------------------------
 copyright D-EDGE 2021
 Inspired from https://sharplab.io/ code by Andrey Shchekin
@@ -47,9 +47,9 @@ Inspired from https://sharplab.io/ code by Andrey Shchekin
 let getProcessName() =
     let name = IO.Path.GetFileNameWithoutExtension (Diagnostics.Process.GetCurrentProcess().MainModule.FileName )
     if String.Equals(name, "dotnet", StringComparison.OrdinalIgnoreCase) then
-        "dotnet fasm"
+        "dotnet fasmi"
     else
-        "fasm"
+        "fasmi"
 
 [<EntryPoint>]
 let main argv =
