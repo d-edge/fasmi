@@ -1,6 +1,18 @@
-# fasmi
+<br />
 
-A F# to Jitted ASM / IL disassembler as a dotnet tool
+<p align="center">
+    <img src="https://raw.githubusercontent.com/d-edge/fasmi/main/img/fasmi.png" alt="fasmi logo" height="140">
+</p>
+
+<p align="center">
+    <img src="https://img.shields.io/nuget/v/fasmi" alt="version" /> 
+    <img src="https://img.shields.io/nuget/dt/fasmi" alt="download" /> 
+    <img src="https://img.shields.io/badge/license-MIT%20%2B%20BSD-green" alt="license" />
+</p>
+
+<br />
+
+Fasmi is a F# to Jitted ASM / IL disassembler as a dotnet tool
 
 ![fasmi demo](img/fasmi-demo.gif)
 
