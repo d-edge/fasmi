@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFrameworks>net5.0;net6.0</TargetFrameworks>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fasmi</ToolCommandName>
     <PackageOutputPath>./nuget</PackageOutputPath>
@@ -17,6 +17,7 @@
     <PackageProjectUrl>https://github.com/d-edge/fasmi</PackageProjectUrl>
     <RepositoryUrl>https://github.com/d-edge/fasmi</RepositoryUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Version>1.1.0</Version>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="FileSystem.fs" />
