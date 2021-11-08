@@ -1,22 +1,34 @@
 module Compilation
 open System
-open FSharp.Compiler.SourceCodeServices
 open FileSystem
+open FSharp.Compiler.CodeAnalysis
 
 // the Assembly attribute to build output as net5.0
-let net50Attr = """
+
+let netAttr =
+    #if NET6_0
+    """
+namespace Microsoft.BuildSettings
+[<System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v6.0", FrameworkDisplayName="")>]
+do ()
+"""
+
+#else
+    """
 namespace Microsoft.BuildSettings
 [<System.Runtime.Versioning.TargetFrameworkAttribute(".NETCoreApp,Version=v5.0", FrameworkDisplayName="")>]
 do ()
 """
 
-let net50AttrName = "Net50AssemblyAttr.fs"
+#endif
+
+let netAttrName = "Net50AssemblyAttr.fs"
 
 // check the net5.0 assembly attribute file exists or create it
 let ensureNet5Attr asmPath =
-    let filePath = dir asmPath </> net50AttrName
+    let filePath = dir asmPath </> netAttrName
     if not (IO.File.Exists filePath) then
-        IO.File.WriteAllText(filePath, net50Attr)
+        IO.File.WriteAllText(filePath, netAttr)
     filePath
 
 
@@ -27,7 +39,11 @@ let compile (path: string) (asmPath: string) =
     // fin net5.0 assembly path
     let net50Path = 
         let  runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
+#if NET6_0
+        IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/6.0.0/ref/net6.0/")
+#else
         IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0/")
+#endif
         
     let attrfile = ensureNet5Attr asmPath
     
@@ -41,9 +57,13 @@ let compile (path: string) (asmPath: string) =
                            "--targetprofile:netcore"
                            "--langversion:preview"
                            "--define:NET"
-                           "--define:NET5_0"
                            "--define:NETCOREAPP"
+                           "--define:NET5_0"
                            "--define:NET5_0_OR_GREATER"
+                           #if NET6_0
+                           "--define:NET6_0"
+                           "--define:NET6_0_OR_GREATER"
+                           #endif
                            "--define:NETCOREAPP1_0_OR_GREATER"
                            "--define:NETCOREAPP1_1_OR_GREATER"
                            "--define:NETCOREAPP2_0_OR_GREATER"
