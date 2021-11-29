@@ -9,6 +9,7 @@ type Cmd =
     | [<Mandatory; MainCommand; AltCommandLine("-s")>]Source of string
     | [<AltCommandLine("-c")>] Console
     | [<AltCommandLine("-o")>] Output of string
+    | [<AltCommandLine("-x")>] Hex
     | [<AltCommandLine("-w")>] Watch
     | [<AltCommandLine("-p")>] Platform of Disassembly.Platform
     | [<AltCommandLine("-l")>] Language of Disassembly.Language
@@ -20,6 +21,7 @@ type Cmd =
             | Source _ -> "the source fsx or dotnet assembly file"
             | Console -> "output to console"
             | Output _ -> "specifiy the output file" 
+            | Hex _ -> "show instruction opcodes"
             | Watch -> "run in watch mode"
             | Platform _ -> "specify the platform for disassembly"
             | Language _ -> "specify the output language (asm/il)"
@@ -146,13 +148,14 @@ let main argv =
 
 
             logf "Disassembly"
-            
+
+            let showOpcodes = cmd.Contains Hex
 
             // disassemble
             if cmd.Contains Console then
-                Disassembly.decompileToConsole asmPath language platform
+                Disassembly.decompileToConsole asmPath language platform showOpcodes
             else
-                Disassembly.decompileToFile asmPath out language platform
+                Disassembly.decompileToFile asmPath out language platform showOpcodes
 
         if cmd.Contains Watch then
             // run in watch mode

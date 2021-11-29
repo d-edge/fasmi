@@ -32,7 +32,7 @@ let disassembleFromSourceProject methodName =
 
     Disassembly.withRuntime (fun runtime ->
         use writer = new IO.StringWriter()
-        Disassembly.disassembleMethod runtime mth Disassembly.Platform.X64 writer
+        Disassembly.disassembleMethod runtime mth Disassembly.Platform.X64 false writer
         writer.Flush()
         writer.ToString())
 
