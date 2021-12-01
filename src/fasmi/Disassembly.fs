@@ -139,13 +139,14 @@ let disassembleConcreteMethod (runtime: ClrRuntime) (mthinfo: MethodBase) platfo
                 // render instructions
                 for inst in decoder do
                     formatter.Format(&inst, out)
-                    let inst_relative_ip = int <| inst.IP - address
+                    let instRelativeIp = int <| inst.IP - address
                     if showOpcodes then
-                        let inst_opcode_hex = bytes[inst_relative_ip..inst_relative_ip + inst.Length - 1]
-                                                |> Array.fold (fun hex b -> sprintf "%s %02x" hex b) ""
-                        writer.WriteLine $"L%04x{inst_relative_ip}: %45s{inst_opcode_hex}  %s{out.ToStringAndReset()}"
+                        let inst_opcode_hex = bytes[instRelativeIp..instRelativeIp + inst.Length - 1]
+                                                |> Array.map (fun b -> sprintf "%02x" b) 
+                                                |> String.concat ""
+                        writer.WriteLine $"L%04x{instRelativeIp}: %45s{inst_opcode_hex}  %s{out.ToStringAndReset()}"
                     else
-                        writer.WriteLine $"L%04x{inst_relative_ip}: %s{out.ToStringAndReset()}"
+                        writer.WriteLine $"L%04x{instRelativeIp}: %s{out.ToStringAndReset()}"
                     writer.Flush()
 
 
