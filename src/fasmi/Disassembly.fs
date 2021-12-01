@@ -76,7 +76,7 @@ let formatterOptions = FormatterOptions(
 
 
 // disassemble a single method
-let disassembleConcreteMethod (runtime: ClrRuntime) (mthinfo: MethodBase) platform (writer: TextWriter) =
+let disassembleConcreteMethod (runtime: ClrRuntime) (mthinfo: MethodBase) platform showOpcodes (writer: TextWriter) =
 
     runtime.FlushCachedData()
     let h = mthinfo.MethodHandle
@@ -139,7 +139,13 @@ let disassembleConcreteMethod (runtime: ClrRuntime) (mthinfo: MethodBase) platfo
                 // render instructions
                 for inst in decoder do
                     formatter.Format(&inst, out)
-                    writer.WriteLine $"L%04x{inst.IP - address}: %s{out.ToStringAndReset()}"
+                    let inst_relative_ip = int <| inst.IP - address
+                    if showOpcodes then
+                        let inst_opcode_hex = bytes[inst_relative_ip..inst_relative_ip + inst.Length - 1]
+                                                |> Array.fold (fun hex b -> sprintf "%s %02x" hex b) ""
+                        writer.WriteLine $"L%04x{inst_relative_ip}: %45s{inst_opcode_hex}  %s{out.ToStringAndReset()}"
+                    else
+                        writer.WriteLine $"L%04x{inst_relative_ip}: %s{out.ToStringAndReset()}"
                     writer.Flush()
 
 
@@ -153,9 +159,9 @@ let outputGenericMethod (runtime: ClrRuntime) (mthinfo: MethodBase) (writer: Tex
     writer.WriteLine $"; generic method cannot be jitted. provide explicit types"
     writer.Flush()
 
-let disassembleMethod runtime (mthinfo: MethodBase) platform writer =
+let disassembleMethod runtime (mthinfo: MethodBase) platform showOpcodes writer =
     if not mthinfo.IsGenericMethodDefinition && not mthinfo.DeclaringType.IsGenericTypeDefinition then
-        disassembleConcreteMethod runtime mthinfo platform writer
+        disassembleConcreteMethod runtime mthinfo platform showOpcodes writer
     else
         outputGenericMethod runtime mthinfo writer
 
@@ -167,7 +173,7 @@ let withRuntime f =
     
 
 // disassemble assembly as jitted x86/x64 to text writer
-let disassemble asmPath (writer: TextWriter) platform =
+let disassemble asmPath (writer: TextWriter) platform showOpcodes =
 
     // attach to self
     withRuntime (fun runtime ->
@@ -188,13 +194,13 @@ let disassemble asmPath (writer: TextWriter) platform =
 
             for mth in getAllMethods ty do
                 if mth.DeclaringType <> typeof<obj> then
-                    disassembleMethod runtime mth platform writer
+                    disassembleMethod runtime mth platform showOpcodes writer
                         
 
             for sty in ty.GetNestedTypes() do
                 for mth in getAllMethods sty do
                     if mth.DeclaringType <> typeof<obj> then
-                        disassembleMethod runtime mth platform writer
+                        disassembleMethod runtime mth platform showOpcodes writer
     )
 
 /// disassemble assembly as IL to text writer
@@ -205,19 +211,19 @@ let ildasm asmPath writer =
     disass.WriteModuleContents(pe)
 
 /// disassemble assembly to writer
-let decompile asmPath writer language platform =
+let decompile asmPath writer language platform showOpcodes =
     match language with
-    | Asm -> disassemble asmPath writer platform
+    | Asm -> disassemble asmPath writer platform showOpcodes
     | IL -> ildasm asmPath writer
 
 /// disassemble assembly to file
-let decompileToFile asmPath outPath language platform =
+let decompileToFile asmPath outPath language platform showOpcodes =
     use w = File.CreateText(outPath)
-    decompile asmPath w language platform
+    decompile asmPath w language platform showOpcodes
 
 
 /// disassemble assembly to console
-let decompileToConsole asmPath language platform  =
+let decompileToConsole asmPath language platform showOpcodes =
     use s = Console.OpenStandardOutput()
     use w = new IO.StreamWriter(s)
-    decompile asmPath w language platform
+    decompile asmPath w language platform showOpcodes
