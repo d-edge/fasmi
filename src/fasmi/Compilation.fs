@@ -3,7 +3,7 @@ open System
 open FileSystem
 open FSharp.Compiler.CodeAnalysis
 
-// the Assembly attribute to build output as net5.0
+// the Assembly attribute to build output as net5.0/net6.0
 
 let netAttr =
     #if NET6_0
@@ -22,10 +22,10 @@ do ()
 
 #endif
 
-let netAttrName = "Net50AssemblyAttr.fs"
+let netAttrName = "NetAssemblyAttr.fs"
 
-// check the net5.0 assembly attribute file exists or create it
-let ensureNet5Attr asmPath =
+// check the net5.0/net6.0 assembly attribute file exists or create it
+let ensureNetAttr asmPath =
     let filePath = dir asmPath </> netAttrName
     if not (IO.File.Exists filePath) then
         IO.File.WriteAllText(filePath, netAttr)
@@ -36,8 +36,8 @@ let ensureNet5Attr asmPath =
 let compile (path: string) (asmPath: string) = 
     let checker = FSharpChecker.Create(keepAssemblyContents = true)
 
-    // fin net5.0 assembly path
-    let net50Path = 
+    // find .net assembly path
+    let netPath = 
         let  runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
 #if NET6_0
         
@@ -45,13 +45,11 @@ let compile (path: string) (asmPath: string) =
             IO.Directory.GetDirectories(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/", "6.0.*")
             |> Seq.max
         IO.Path.GetFullPath(packDir </> "ref/net6.0")
-
-        //IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/6.0.0/ref/net6.0/")
 #else
         IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0/")
 #endif
         
-    let attrfile = ensureNet5Attr asmPath
+    let attrfile = ensureNetAttr asmPath
     
     let diag,_ = 
         checker.Compile([| "fsc.exe"
@@ -78,7 +76,7 @@ let compile (path: string) (asmPath: string) =
                            "--define:NETCOREAPP3_0_OR_GREATER"
                            "--define:NETCOREAPP3_1_OR_GREATER"
                            "--optimize+"
-                           for f in IO.Directory.EnumerateFiles(net50Path,"*.dll") do
+                           for f in IO.Directory.EnumerateFiles(netPath,"*.dll") do
                                 $"-r:{f}"
                             |])
         |> Async.RunSynchronously
