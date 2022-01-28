@@ -1,3 +1,6 @@
+# 1.2.1
+* Support for net6.0 version 6.0.1
+
 # 1.1.0
 * Support for net 6.0
 

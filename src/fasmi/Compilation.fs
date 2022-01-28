@@ -40,7 +40,13 @@ let compile (path: string) (asmPath: string) =
     let net50Path = 
         let  runtimeDir = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory()
 #if NET6_0
-        IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/6.0.0/ref/net6.0/")
+        
+        let packDir = 
+            IO.Directory.GetDirectories(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/", "6.0.*")
+            |> Seq.max
+        IO.Path.GetFullPath(packDir </> "ref/net6.0")
+
+        //IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/6.0.0/ref/net6.0/")
 #else
         IO.Path.GetFullPath(runtimeDir </> "../../../packs/Microsoft.NETCore.App.Ref/5.0.0/ref/net5.0/")
 #endif
