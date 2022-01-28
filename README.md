@@ -12,7 +12,7 @@
 
 <br />
 
-Fasmi is a F# to Jitted ASM / IL disassembler as a dotnet tool
+Fasmi is a F# to Jitted ASM / IL disassembler as a dotnet tool. Maintained by folks at [D-EDGE](https://www.d-edge.com/).
 
 ![fasmi demo](img/fasmi-demo.gif)
 
