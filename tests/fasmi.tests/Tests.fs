@@ -8,17 +8,6 @@ open Xunit
 // generated asm is platform sensitive due to differences in call conventions
 let isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
 
-// normalize line endings for string comparions
-let normalizeLineEnds (s: string) =
-    if isWindows then
-        s
-    else
-        s.Replace("\r\n", "\n") 
-
-module Assert =
-    let EqualString(x, y) = Assert.Equal(normalizeLineEnds x, normalizeLineEnds y)
-
-
 // disassemble en single method from the fasmi.tests.source project
 // notice that this project is *ALWAYS* compiled in release to produce
 // the same optimized IL.
@@ -31,7 +20,7 @@ let disassembleFromSourceProject methodName =
         failwith $"Function '%s{methodName}' not found"
 
     Disassembly.withRuntime (fun runtime ->
-        use writer = new IO.StringWriter()
+        use writer = new IO.StringWriter(NewLine="\n")
         Disassembly.disassembleMethod runtime mth Disassembly.Platform.X64 false writer
         writer.Flush()
         writer.ToString())
@@ -57,19 +46,19 @@ L0000: lea eax, [rdi+1]
 L0003: ret
 """
 
-    Assert.EqualString(expected, output)
+    Assert.Equal(expected, output)
 
 [<Fact>]
 let ``jump label should be generated`` () =
     let output = disassembleFromSourceProject "abs"
-    let lines = (normalizeLineEnds output).Split(Environment.NewLine)
+    let lines = output.Split("\n")
     // we look only at the conditional jump 'jl' line
     // others are different due call conventions
     let jumpLine =
         lines
         |> Array.find (fun l -> l.Contains "jl")
     
-    // the full label can be different because emited ASM has different size
+    // the full label can be different because emitted ASM has different size
     // depending on the platform, so we check only the first chars.
     // we also omit checking the label at the start of the line
     let expected = "jl short L00"
@@ -77,19 +66,12 @@ let ``jump label should be generated`` () =
 
 
 [<Fact>]
-let ``when calling function, call must contain function name`` () =
+let ``when calling system method, call must contain method name`` () =
     let output = disassembleFromSourceProject "toString"
-
-    let lines = (normalizeLineEnds output).Split(Environment.NewLine)
-    let callLine = 
-        lines
-        |> Array.find (fun l -> l.Contains "call")
- 
     // we omit checking the label at the start of the line
     // because it can be different on different platforms
     let expected = "call System.Number.Int32ToDecStr(Int32)"
-    Assert.Contains(expected, callLine)
-
+    Assert.Contains(expected, output)
 
 
 
