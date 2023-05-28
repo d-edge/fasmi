@@ -73,5 +73,12 @@ let ``when calling system method, call must contain method name`` () =
     let expected = "call System.Number.Int32ToDecStr(Int32)"
     Assert.Contains(expected, output)
 
+[<Fact>]
+let ``when calling local method, call must contain method name`` () =
+    let output = disassembleFromSourceProject "sayHello"
+    // we omit checking the label at the start of the line
+    // because it can be different on different platforms
+    let expected = "call Source+HelloWriter.Hello()"
+    Assert.Contains(expected, output)
 
 
