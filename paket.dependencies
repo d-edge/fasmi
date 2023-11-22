@@ -1,7 +1,7 @@
 source https://api.nuget.org/v3/index.json
 
 storage: none
-framework: net5.0, net6.0
+framework: net6.0, net7.0, net8.0
 
 nuget Argu
 nuget coverlet.collector

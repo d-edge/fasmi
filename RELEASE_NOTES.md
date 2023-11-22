@@ -1,3 +1,9 @@
+# 1.4.0
+* Support for net8.0
+
+# 1.3.0
+* Support for net7.0
+
 # 1.1.0
 * Support for net 6.0
 
